@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"godaddy-dyndns/cmd"
+)
 
 func main() {
-	fmt.Println("vim-go")
+	cmd.Execute()
 }
