@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,7 +26,14 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
-		// Run: func(cmd *cobra.Command, args []string) { },
+		Run: func(cmd *cobra.Command, args []string) {
+			domain := viper.Get("domain")
+			apiKey := viper.Get("api-key")
+			secretKey := viper.Get("secret-key")
+			log.Printf("Domain: %s", domain)
+			log.Printf("Api: %s", apiKey)
+			log.Printf("Secret: %s", secretKey)
+		},
 	}
 )
 
@@ -39,6 +48,12 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $XDG_CONFIG_HOME/godaddy/config.yaml)")
 
+	rootCmd.Flags().String("domain", "", "Domain to update")
+	rootCmd.Flags().String("api-key", "", "API key")
+	rootCmd.Flags().String("secret-key", "", "Secret API key")
+	viper.BindPFlag("domain", rootCmd.Flags().Lookup("domain"))
+	viper.BindPFlag("api-key", rootCmd.Flags().Lookup("api"))
+	viper.BindPFlag("secret-key", rootCmd.Flags().Lookup("key"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -55,7 +70,9 @@ func initConfig() {
 		viper.SetConfigName("config")
 	}
 
+	viper.SetEnvPrefix("GD_DYNDNS")
 	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
