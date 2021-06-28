@@ -33,6 +33,11 @@ to quickly create a Cobra application.`,
 			log.Printf("Domain: %s", domain)
 			log.Printf("Api: %s", apiKey)
 			log.Printf("Secret: %s", secretKey)
+			ip, err := extIP()
+			if err != nil {
+				log.Fatalf("Failed to retrieve external IP. %s", err)
+			}
+			log.Printf("Current external ip: %s", ip)
 		},
 	}
 )
