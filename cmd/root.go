@@ -32,6 +32,11 @@ to quickly create a Cobra application.`,
 				log.Fatalf("Failed to retrieve external IP. %s", err)
 			}
 			log.Printf("Current external ip: %s", ip)
+			curIP, err := currentIP()
+			if err != nil {
+				log.Fatalf("Failed to retrieve current A record IP. %s", err)
+			}
+			log.Printf("Current ip: %s", curIP)
 		},
 	}
 )
@@ -48,9 +53,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $XDG_CONFIG_HOME/godaddy/config.yaml)")
 
 	rootCmd.Flags().String("domain", "", "Domain to update")
+	rootCmd.Flags().String("hostname", "", "Hostname to update")
 	rootCmd.Flags().String("api-key", "", "API key")
 	rootCmd.Flags().String("secret-key", "", "Secret API key")
 	viper.BindPFlag("domain", rootCmd.Flags().Lookup("domain"))
+	viper.BindPFlag("hostname", rootCmd.Flags().Lookup("hostname"))
 	viper.BindPFlag("api-key", rootCmd.Flags().Lookup("api"))
 	viper.BindPFlag("secret-key", rootCmd.Flags().Lookup("key"))
 }
