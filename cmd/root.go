@@ -58,8 +58,8 @@ func init() {
 	rootCmd.Flags().String("secret-key", "", "Secret API key")
 	viper.BindPFlag("domain", rootCmd.Flags().Lookup("domain"))
 	viper.BindPFlag("hostname", rootCmd.Flags().Lookup("hostname"))
-	viper.BindPFlag("api-key", rootCmd.Flags().Lookup("api"))
-	viper.BindPFlag("secret-key", rootCmd.Flags().Lookup("key"))
+	viper.BindPFlag("api-key", rootCmd.Flags().Lookup("api-key"))
+	viper.BindPFlag("secret-key", rootCmd.Flags().Lookup("secret-key"))
 }
 
 // initConfig reads in config file and ENV variables if set.
