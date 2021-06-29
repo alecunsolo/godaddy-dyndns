@@ -27,12 +27,6 @@ to quickly create a Cobra application.`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
-			domain := viper.Get("domain")
-			apiKey := viper.Get("api-key")
-			secretKey := viper.Get("secret-key")
-			log.Printf("Domain: %s", domain)
-			log.Printf("Api: %s", apiKey)
-			log.Printf("Secret: %s", secretKey)
 			ip, err := extIP()
 			if err != nil {
 				log.Fatalf("Failed to retrieve external IP. %s", err)
