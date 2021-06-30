@@ -9,8 +9,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-
-	"github.com/spf13/viper"
 )
 
 type ip struct {
@@ -52,12 +50,12 @@ type godaddyPayload struct {
 }
 
 func currentIP() (string, error) {
-	var apiURL = fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", viper.GetString("domain"), viper.GetString("hostname"))
+	var apiURL = fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", domain, hostname)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", viper.Get("api-key"), viper.GetString("secret-key")))
+	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", apiKey, keySecret))
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
@@ -86,7 +84,7 @@ func updateIP(dnsIP, extIP string) error {
 		return nil
 	}
 	log.Printf("Current external IP: %s. Current DNS record: %s", extIP, dnsIP)
-	var apiURL = fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", viper.GetString("domain"), viper.GetString("hostname"))
+	var apiURL = fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", domain, hostname)
 	payload := []godaddyUpdatePayload{
 		{
 			IP:  extIP,
@@ -102,7 +100,7 @@ func updateIP(dnsIP, extIP string) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", viper.Get("api-key"), viper.GetString("secret-key")))
+	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", apiKey, keySecret))
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
