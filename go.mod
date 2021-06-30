@@ -1,4 +1,4 @@
-module godaddy-dyndns
+module github.com/alecunsolo/godaddy-dyndns
 
 go 1.16
 

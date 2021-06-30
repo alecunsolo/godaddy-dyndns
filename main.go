@@ -1,7 +1,7 @@
 package main
 
 import (
-	"godaddy-dyndns/cmd"
+	"github.com/alecunsolo/godaddy-dyndns/cmd"
 )
 
 func main() {
