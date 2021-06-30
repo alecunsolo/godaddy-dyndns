@@ -1,0 +1,13 @@
+[Unit]
+Description=Update Dynamic DNS
+Requires=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/systemd/system/update-godaddy.env
+ExecStart=/usr/local/sbin/godaddy-dyndns
+TimeoutSec=30
+
+User=nobody
+Group=nogroup
