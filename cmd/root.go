@@ -27,16 +27,18 @@ to quickly create a Cobra application.`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
-			ip, err := extIP()
+			extIP, err := retrieveExternalIP()
 			if err != nil {
 				log.Fatalf("Failed to retrieve external IP. %s", err)
 			}
-			log.Printf("Current external ip: %s", ip)
-			curIP, err := currentIP()
+			dnsIP, err := currentIP()
 			if err != nil {
 				log.Fatalf("Failed to retrieve current A record IP. %s", err)
 			}
-			log.Printf("Current ip: %s", curIP)
+			err = updateIP(dnsIP, extIP)
+			if err != nil {
+				log.Fatalf("Failed to update DNS record. %s", err)
+			}
 		},
 	}
 )

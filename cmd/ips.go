@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -14,7 +17,7 @@ type ip struct {
 	IP string `json:"query"`
 }
 
-func extIP() (string, error) {
+func retrieveExternalIP() (string, error) {
 	params := url.Values{}
 	params.Add("fields", "query")
 
@@ -70,4 +73,49 @@ func currentIP() (string, error) {
 		return "", err
 	}
 	return godaddyData[0].IP, nil
+}
+
+type godaddyUpdatePayload struct {
+	IP  string `json:"data"`
+	TTL int    `json:"ttl"`
+}
+
+func updateIP(dnsIP, extIP string) error {
+	if dnsIP == extIP {
+		log.Println("External IP and current DNS record are equal. Nothing to do")
+		return nil
+	}
+	log.Printf("Current external IP: %s. Current DNS record: %s", extIP, dnsIP)
+	var apiURL = fmt.Sprintf("https://api.godaddy.com/v1/domains/%s/records/A/%s", viper.GetString("domain"), viper.GetString("hostname"))
+	payload := []godaddyUpdatePayload{
+		{
+			IP:  extIP,
+			TTL: 600,
+		},
+	}
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("PUT", apiURL, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("sso-key %s:%s", viper.Get("api-key"), viper.GetString("secret-key")))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Something went wrong
+	if resp.StatusCode != 200 {
+		log.Printf("response Status: %s", resp.Status)
+		log.Printf("response Headers: %s", resp.Header)
+		body, _ := ioutil.ReadAll(resp.Body)
+		return errors.New(string(body))
+	}
+
+	return nil
 }
